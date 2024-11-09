@@ -1,19 +1,12 @@
 [build]
 builder = "nixpacks"
 buildCommand = """
-pip install -r requirements.txt
+pip install -r requirements.txt && ls 
 """
 
 [deploy]
-startCommand = """
-echo "Current directory: $(pwd)"
-echo "Listing files:"
-ls -la
-echo "Attempting database restore..."
-pg_restore -v -d $DATABASE_URL --no-owner --no-privileges /opt/app/recipe_db_dump.custom || echo "Restore failed with code $?"
-echo "Starting web server..."
-gunicorn --bind=0.0.0.0:$PORT main:app
-"""
+startCommand = "pg_restore -v -d $DATABASE_URL --no-owner --no-privileges ./recipe_db_dump.custom && gunicorn --bind=0.0.0.0:$PORT main:app"
+
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 restartPolicyType = "on_failure"
