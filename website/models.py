@@ -126,10 +126,10 @@ def add_recipe_to_faiss(recipe):
     faiss_index.add(embedding)
     
     # Store updated FAISS index
-    faiss_storage = ModelStorage.query.filter_by(name='faiss_index').first()
-    if not faiss_storage:
-        faiss_storage = ModelStorage(name='faiss_index')
-    faiss_storage.set_data(faiss_index)
+    # faiss_storage = ModelStorage.query.filter_by(name='faiss_index').first()
+    # if not faiss_storage:
+    #     faiss_storage = ModelStorage(name='faiss_index')
+    # faiss_storage.set_data(faiss_index)
     
     # Update TF-IDF
     recipe_text = prepare_recipe_text(recipe)
@@ -137,15 +137,15 @@ def add_recipe_to_faiss(recipe):
     tfidf_matrix = vstack([tfidf_matrix, new_tfidf])
     
     # Store updated TF-IDF matrix
-    tfidf_storage = ModelStorage.query.filter_by(name='tfidf_matrix').first()
-    if not tfidf_storage:
-        tfidf_storage = ModelStorage(name='tfidf_matrix')
-    tfidf_storage.set_data(tfidf_matrix)
+    # tfidf_storage = ModelStorage.query.filter_by(name='tfidf_matrix').first()
+    # if not tfidf_storage:
+    #     tfidf_storage = ModelStorage(name='tfidf_matrix')
+    # tfidf_storage.set_data(tfidf_matrix)
     
     print("Updated index and matrix")
-    db.session.add(faiss_storage)
-    db.session.add(tfidf_storage)
-    db.session.commit()
+    # db.session.add(faiss_storage)
+    # db.session.add(tfidf_storage)
+    # db.session.commit()
 
 def remove_recipe_from_faiss(recipe):
     global faiss_index, tfidf_matrix
@@ -154,11 +154,11 @@ def remove_recipe_from_faiss(recipe):
     faiss_index.remove_ids(np.array([recipe.id - 1]))
     print(f"Removed recipe {recipe.id} from FAISS index.")
         
-     # Store updated FAISS index in database
-    faiss_storage = ModelStorage.query.filter_by(name='faiss_index').first()
-    if not faiss_storage:
-        faiss_storage = ModelStorage(name='faiss_index')
-    faiss_storage.set_data(faiss_index)
+    # Store updated FAISS index in database
+    # faiss_storage = ModelStorage.query.filter_by(name='faiss_index').first()
+    # if not faiss_storage:
+    #     faiss_storage = ModelStorage(name='faiss_index')
+    # faiss_storage.set_data(faiss_index)
 
     #Removing from matrix
     row_to_remove = recipe.id - 1  # Assuming recipe IDs start from 1
@@ -170,15 +170,15 @@ def remove_recipe_from_faiss(recipe):
     print(f"Updated TF-IDF matrix shape: {tfidf_matrix.shape}")
 
     # Store updated TF-IDF matrix in database
-    tfidf_storage = ModelStorage.query.filter_by(name='tfidf_matrix').first()
-    if not tfidf_storage:
-        tfidf_storage = ModelStorage(name='tfidf_matrix')
-    tfidf_storage.set_data(tfidf_matrix)
+    # tfidf_storage = ModelStorage.query.filter_by(name='tfidf_matrix').first()
+    # if not tfidf_storage:
+    #     tfidf_storage = ModelStorage(name='tfidf_matrix')
+    # tfidf_storage.set_data(tfidf_matrix)
 
     # Commit changes to database
-    db.session.add(faiss_storage)
-    db.session.add(tfidf_storage)
-    db.session.commit()
+    # db.session.add(faiss_storage)
+    # db.session.add(tfidf_storage)
+    # db.session.commit()
     # Updating the vectorizer takes a lot of time and resources. Thus, will only do it when absolutely neccesary
     
 def combined_search_recipes(user_query, k_elements=100, semantic_threshold=0.1, tfidf_threshold=1, semantic_weight=0.4, tfidf_weight=0.6):
