@@ -2,8 +2,6 @@
 builder = "nixpacks"
 buildCommand = """
 pip install -r requirements.txt
-mkdir -p /opt/app
-cp recipe_db_dump.custom /opt/app/
 """
 
 [deploy]
