@@ -323,142 +323,153 @@ def load_profile():
 def post_recipe():
 
     if request.method == 'POST':
-        recipe_id = request.form.get('recipe_id')
-        if recipe_id:
-            # Updating existing recipe
-            recipe = Recipe.query.filter_by(id=recipe_id, user_id=current_user.id).first()
-            if not recipe:
-                abort(403)  # Forbidden if the recipe doesn't exist or doesn't belong to the user
-        else:
-            # Creating new recipe
-            recipe = Recipe(user_id=current_user.id)
-            db.session.add(recipe)
-
-        # Update recipe fields
-        recipe.name = bleach.clean(request.form.get("Title"))
-        recipe.cook_time = bleach.clean(request.form.get("Cook_time"))
-        recipe.desc = bleach.clean(request.form.get("Description"))
-
-        # Handle steps
-        steps = bleach.clean(request.form.get("Instructions"))
-        recipe.steps = steps  # This will now be a |-separated string of steps
-
-
-        # Handle existing images
-        existing_images = [value for key, value in request.form.items() if key.startswith('existing_images_')]
-        for image in recipe.images:
-            if image.filename in existing_images:
-                existing_images.remove(image.filename)
+        try:
+                
+            recipe_id = request.form.get('recipe_id')
+            if recipe_id:
+                # Updating existing recipe
+                recipe = Recipe.query.filter_by(id=recipe_id, user_id=current_user.id).first()
+                if not recipe:
+                    abort(403)  # Forbidden if the recipe doesn't exist or doesn't belong to the user
             else:
-                os.remove(image.url)
-                db.session.delete(image)
+                # Creating new recipe
+                recipe = Recipe(user_id=current_user.id)
+                db.session.add(recipe)
 
-        # Ensure images directory exists
-        image_dir = os.path.join(current_app.root_path, 'images')
-        # Handle new image uploads
-        new_images = []
-        for key, value in request.files.items():
-            if key.startswith('new_images_'):
-                new_images.extend(request.files.getlist(key))
-        for image in new_images:
-            if image and allowed_file(image.filename):
-                filename = secure_filename(image.filename)
+            # Update recipe fields
+            recipe.name = bleach.clean(request.form.get("Title"))
+            recipe.cook_time = bleach.clean(request.form.get("Cook_time"))
+            recipe.desc = bleach.clean(request.form.get("Description"))
+
+            # Handle steps
+            steps = bleach.clean(request.form.get("Instructions"))
+            recipe.steps = steps  # This will now be a |-separated string of steps
+
+
+            # Handle existing images
+            existing_images = [value for key, value in request.form.items() if key.startswith('existing_images_')]
+            for image in recipe.images:
+                if image.filename in existing_images:
+                    existing_images.remove(image.filename)
+                else:
+                    os.remove(image.url)
+                    db.session.delete(image)
+
+            # Ensure images directory exists
+            image_dir = os.path.join(current_app.root_path, 'images')
+            # Handle new image uploads
+            new_images = []
+            for key, value in request.files.items():
+                if key.startswith('new_images_'):
+                    new_images.extend(request.files.getlist(key))
+            for image in new_images:
+                if image and allowed_file(image.filename):
+                    filename = secure_filename(image.filename)
+                    filename = f"{uuid.uuid4().hex}{os.path.splitext(filename)[1]}"
+                    image_path = os.path.join(image_dir, filename)
+                    os.makedirs(os.path.dirname(image_path), exist_ok=True)
+                    image.save(image_path)
+                    new_image = Image(filename=filename, url=image_path, recipe=recipe)
+                    db.session.add(new_image)
+
+
+            # Handle existing video
+            existing_video = request.form.get('existing_video')
+            if not existing_video:
+                old_video = Video.query.filter_by(recipe_id=recipe.id).first()
+                if old_video and os.path.exists(old_video.url):
+                    os.remove(old_video.url)
+                    db.session.delete(old_video)
+
+            # Ensure videos directory exists
+            video_dir = os.path.join(current_app.root_path, 'videos')
+            # Handle new video upload
+            new_video = request.files.get('new_video')
+            if new_video and allowed_file(new_video.filename):
+                filename = secure_filename(new_video.filename)
                 filename = f"{uuid.uuid4().hex}{os.path.splitext(filename)[1]}"
-                image_path = os.path.join(image_dir, filename)
-                os.makedirs(os.path.dirname(image_path), exist_ok=True)
-                image.save(image_path)
-                new_image = Image(filename=filename, url=image_path, recipe=recipe)
-                db.session.add(new_image)
+                video_path = os.path.join(video_dir, filename)
+                os.makedirs(os.path.dirname(video_path), exist_ok=True)
+                new_video.save(video_path)
+                new_video = Video(filename=filename, url=video_path, recipe=recipe)
+                db.session.add(new_video)
+
+            # Update tags and ingredients
+            recipe.tags = []
+            recipe.ingredients = []
+
+            # Remove any empty strings
+            tags_input = {tag.strip() for tag in set(request.form.get('TagsInput', '').split(','))}
+            tags_component = set(request.form.get('Tags', '').split(','))
+            tags = tags_input.union(tags_component)
+
+            ingredients_input = {ingredient.strip() for ingredient in set(request.form.get('IngredientsInput', '').split(','))}
+            ingredients_component = set(request.form.get('Ingredients', '').split(','))
+            ingredients = ingredients_input.union(ingredients_component)
+            # Fetch existing tags and ingredients in one query
+            existing_tags = {tag.name: tag for tag in Tag.query.filter(Tag.name.in_(tags)).all()}
+            existing_ingredients = {ingredient.name: ingredient for ingredient in Ingredient.query.filter(Ingredient.name.in_(ingredients)).all()}
+
+            # Process tags
+            for tag_name in tags:
+                if not tag_name:
+                    continue
+                tag = existing_tags.get(tag_name)
+                if not tag:
+                    tag = Tag(name=tag_name)
+                    db.session.add(tag)
+                recipe.tags.append(tag)
+
+            # Process ingredients
+            for ingredient_name in ingredients:
+                if not ingredient_name:
+                    continue
+                ingredient = existing_ingredients.get(ingredient_name)
+                if not ingredient:
+                    ingredient = Ingredient(name=ingredient_name)
+                    db.session.add(ingredient)
+                recipe.ingredients.append(ingredient)
 
 
-        # Handle existing video
-        existing_video = request.form.get('existing_video')
-        if not existing_video:
-            old_video = Video.query.filter_by(recipe_id=recipe.id).first()
-            if old_video and os.path.exists(old_video.url):
-                os.remove(old_video.url)
-                db.session.delete(old_video)
+            ingredients_text = ', '.join([ingredient.name for ingredient in recipe.ingredients])
+            tags_text = ', '.join([tag.name for tag in recipe.tags])
+            numbered_steps = " ".join([f"{i+1}. {step}" for i, step in enumerate(recipe.steps.split("|"))])
 
-        # Ensure videos directory exists
-        video_dir = os.path.join(current_app.root_path, 'videos')
-        # Handle new video upload
-        new_video = request.files.get('new_video')
-        if new_video and allowed_file(new_video.filename):
-            filename = secure_filename(new_video.filename)
-            filename = f"{uuid.uuid4().hex}{os.path.splitext(filename)[1]}"
-            video_path = os.path.join(video_dir, filename)
-            os.makedirs(os.path.dirname(video_path), exist_ok=True)
-            new_video.save(video_path)
-            new_video = Video(filename=filename, url=video_path, recipe=recipe)
-            db.session.add(new_video)
+            text_data = (
+                f"The recipe name is {recipe.name}"
+                f"The recipe takes {recipe.cook_time} minutes to cook"
+                f"To cook the recipe, the following ingredients are required, separated by commas: {ingredients_text}."
+                f"The recipe has the following associated tags, separated by commas: {tags_text}."
+                f"The description of the recipe is: {recipe.desc}. "
+                f"Here are the instructions to cook the recipe: {numbered_steps}."
+            )
 
-        # Update tags and ingredients
-        recipe.tags = []
-        recipe.ingredients = []
+            # Generate embedding for the recipe
+            embedding = model.encode(text_data)
+            recipe.embedding = embedding.tolist()
 
-        # Remove any empty strings
-        tags_input = {tag.strip() for tag in set(request.form.get('TagsInput', '').split(','))}
-        tags_component = set(request.form.get('Tags', '').split(','))
-        tags = tags_input.union(tags_component)
+            #Commit changes to database
+            db.session.commit()
 
-        ingredients_input = {ingredient.strip() for ingredient in set(request.form.get('IngredientsInput', '').split(','))}
-        ingredients_component = set(request.form.get('Ingredients', '').split(','))
-        ingredients = ingredients_input.union(ingredients_component)
-        # Fetch existing tags and ingredients in one query
-        existing_tags = {tag.name: tag for tag in Tag.query.filter(Tag.name.in_(tags)).all()}
-        existing_ingredients = {ingredient.name: ingredient for ingredient in Ingredient.query.filter(Ingredient.name.in_(ingredients)).all()}
+            add_recipe_to_faiss(recipe=recipe)
 
-        # Process tags
-        for tag_name in tags:
-            if not tag_name:
-                continue
-            tag = existing_tags.get(tag_name)
-            if not tag:
-                tag = Tag(name=tag_name)
-                db.session.add(tag)
-            recipe.tags.append(tag)
+            user_search_cache_key = f"user:{current_user.id}:search_result"
+            user_profile_cache_key = f"user:{current_user.id}:profile"
+            # Use delete_many for efficient multiple key deletion
+            cache.delete(user_search_cache_key)
+            cache.delete(user_profile_cache_key)
+            cache.set('all_recipes_ids_len', Recipe.query.count())
 
-        # Process ingredients
-        for ingredient_name in ingredients:
-            if not ingredient_name:
-                continue
-            ingredient = existing_ingredients.get(ingredient_name)
-            if not ingredient:
-                ingredient = Ingredient(name=ingredient_name)
-                db.session.add(ingredient)
-            recipe.ingredients.append(ingredient)
-
-
-        ingredients_text = ', '.join([ingredient.name for ingredient in recipe.ingredients])
-        tags_text = ', '.join([tag.name for tag in recipe.tags])
-        numbered_steps = " ".join([f"{i+1}. {step}" for i, step in enumerate(recipe.steps.split("|"))])
-
-        text_data = (
-            f"The recipe name is {recipe.name}"
-            f"The recipe takes {recipe.cook_time} minutes to cook"
-            f"To cook the recipe, the following ingredients are required, separated by commas: {ingredients_text}."
-            f"The recipe has the following associated tags, separated by commas: {tags_text}."
-            f"The description of the recipe is: {recipe.desc}. "
-            f"Here are the instructions to cook the recipe: {numbered_steps}."
-        )
-
-        # Generate embedding for the recipe
-        embedding = model.encode(text_data)
-        recipe.embedding = embedding.tolist()
-
-        #Commit changes to database
-        db.session.commit()
-
-        add_recipe_to_faiss(recipe=recipe)
-
-        user_search_cache_key = f"user:{current_user.id}:search_result"
-        user_profile_cache_key = f"user:{current_user.id}:profile"
-        # Use delete_many for efficient multiple key deletion
-        cache.delete(user_search_cache_key)
-        cache.delete(user_profile_cache_key)
-        cache.set('all_recipes_ids_len', Recipe.query.count())
-
-        return redirect(url_for('views.get_recipe', recipe_id=recipe.id))
+            return redirect(url_for('views.get_recipe', recipe_id=recipe.id))
+        except Exception as e:
+            # Log the error
+            current_app.logger.error(f"Error in post_recipe: {str(e)}")
+            
+            # Return error response
+            return jsonify({
+                'error': 'Failed to save recipe',
+                'message': str(e)
+            }), 500
 
     tags = Tag.query.all()
     ingredients = Ingredient.query.all()
@@ -504,7 +515,6 @@ def delete_recipe():
 
     user_search_cache_key = f"user:{current_user.id}:search_result"
     user_profile_cache_key = f"user:{current_user.id}:profile"
-    # Use delete_many for efficient multiple key deletion
     cache.delete(user_search_cache_key)
     cache.delete(user_profile_cache_key)
     cache.set('all_recipes_ids_len', Recipe.query.count())
