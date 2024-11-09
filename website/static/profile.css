@@ -1,0 +1,400 @@
+/* Make text look crisper and more legible in all browsers */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  
+  /* Focus state style for keyboard navigation for the focusable elements */
+  *[tabindex]:focus-visible,
+    input[type="file"]:focus-visible {
+     outline: 0.125rem solid #4d65ff;
+     outline-offset: 0.125rem;
+  }
+  
+  /* Get rid of top margin on first element in any rich text element */
+  .w-richtext > :not(div):first-child, .w-richtext > div:first-child > :first-child {
+    margin-top: 0 !important;
+  }
+  
+  /* Get rid of bottom margin on last element in any rich text element */
+  .w-richtext>:last-child, .w-richtext ol li:last-child, .w-richtext ul li:last-child {
+      margin-bottom: 0 !important;
+  }
+  
+  /* Prevent all click and hover interaction with an element */
+  .pointer-events-off {
+      pointer-events: none;
+  }
+  
+  /* Enables all click and hover interaction with an element */
+  .pointer-events-on {
+    pointer-events: auto;
+  }
+  
+  /* Create a class of .div-square which maintains a 1:1 dimension of a div */
+  .div-square::after {
+      content: "";
+      display: block;
+      padding-bottom: 100%;
+  }
+  
+  /* Make sure containers never lose their center alignment */
+  .container-medium,.container-small, .container-large {
+      margin-right: auto !important;
+    margin-left: auto !important;
+  }
+  
+  /* 
+  Make the following elements inherit typography styles from the parent and not have hardcoded values. 
+  Important: You will not be able to style for example "All Links" in Designer with this CSS applied.
+  Uncomment this CSS to use it in the project. Leave this message for future hand-off.
+  */
+  /*
+  a,
+  .w-input,
+  .w-select,
+  .w-tab-link,
+  .w-nav-link,
+  .w-dropdown-btn,
+  .w-dropdown-toggle,
+  .w-dropdown-link {
+    color: inherit;
+    text-decoration: inherit;
+    font-size: inherit;
+  }
+  */
+  
+  /* Apply "..." after 3 lines of text */
+  .text-style-3lines {
+      display: -webkit-box;
+      overflow: hidden;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+  }
+  
+  /* Apply "..." after 2 lines of text */
+  .text-style-2lines {
+      display: -webkit-box;
+      overflow: hidden;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+  }
+  
+  /* Adds inline flex display */
+  .display-inlineflex {
+    display: inline-flex;
+  }
+  
+  /* These classes are never overwritten */
+  .hide {
+    display: none !important;
+  }
+  
+  @media screen and (max-width: 991px) {
+      .hide, .hide-tablet {
+          display: none !important;
+      }
+  }
+    @media screen and (max-width: 767px) {
+      .hide-mobile-landscape{
+        /* display: none !important; */
+      }
+  }
+    @media screen and (max-width: 479px) {
+      .hide-mobile{
+        display: none !important;
+      }
+  }
+   
+  .margin-0 {
+    margin: 0rem !important;
+  }
+    
+  .padding-0 {
+    padding: 0rem !important;
+  }
+  
+  .spacing-clean {
+  padding: 0rem !important;
+  margin: 0rem !important;
+  }
+  
+  .margin-top {
+    margin-right: 0rem !important;
+    margin-bottom: 0rem !important;
+    margin-left: 0rem !important;
+  }
+  
+  .padding-top {
+    padding-right: 0rem !important;
+    padding-bottom: 0rem !important;
+    padding-left: 0rem !important;
+  }
+    
+  .margin-right {
+    margin-top: 0rem !important;
+    margin-bottom: 0rem !important;
+    margin-left: 0rem !important;
+  }
+  
+  .padding-right {
+    padding-top: 0rem !important;
+    padding-bottom: 0rem !important;
+    padding-left: 0rem !important;
+  }
+  
+  .margin-bottom {
+    margin-top: 0rem !important;
+    margin-right: 0rem !important;
+    margin-left: 0rem !important;
+  }
+  
+  .padding-bottom {
+    padding-top: 0rem !important;
+    padding-right: 0rem !important;
+    padding-left: 0rem !important;
+  }
+  
+  .margin-left {
+    margin-top: 0rem !important;
+    margin-right: 0rem !important;
+    margin-bottom: 0rem !important;
+  }
+    
+  .padding-left {
+    padding-top: 0rem !important;
+    padding-right: 0rem !important;
+    padding-bottom: 0rem !important;
+  }
+    
+  .margin-horizontal {
+    margin-top: 0rem !important;
+    margin-bottom: 0rem !important;
+  }
+  
+  .padding-horizontal {
+    padding-top: 0rem !important;
+    padding-bottom: 0rem !important;
+  }
+  
+  .margin-vertical {
+    margin-right: 0rem !important;
+    margin-left: 0rem !important;
+  }
+    
+  .padding-vertical {
+    padding-right: 0rem !important;
+    padding-left: 0rem !important;
+  }
+  .pad-right{
+      padding-right: 2.5rem;
+  }
+  a { color: inherit; }
+
+.nav---button {
+line-height: 0;
+}
+
+.btn---wrap {
+position: relative;
+/* display: inline-block; */
+display:flex;
+overflow: hidden;
+border: 0.0625rem solid #000;
+border-radius: 0.25rem;
+background-color: #000;
+-webkit-transition: border-color 300ms ease;
+transition: border-color 300ms ease;
+flex-direction: column;
+margin-bottom: 3px;
+}
+
+.btn---bg-wrap {
+position: absolute;
+left: -0.0625rem;
+top: -0.0625rem;
+right: -0.0625rem;
+bottom: -0.0625rem;
+display: -webkit-box;
+display: -webkit-flex;
+display: -ms-flexbox;
+display: flex;
+-webkit-box-pack: center;
+-webkit-justify-content: center;
+-ms-flex-pack: center;
+justify-content: center;
+-webkit-box-align: center;
+-webkit-align-items: center;
+-ms-flex-align: center;
+align-items: center;
+}
+
+.btn---bg-circle-wrap {
+width: 200%;
+-webkit-box-flex: 0;
+-webkit-flex: 0 0 auto;
+-ms-flex: 0 0 auto;
+flex: 0 0 auto;
+}
+
+.btn---bg-circle {
+padding-top: 100%;
+border-radius: 50%;
+background-color: #e7e8de;
+-webkit-transform: scale(0);
+-ms-transform: scale(0);
+transform: scale(0);
+}
+
+.btn {
+position: relative;
+display: inline-block;
+padding: 1rem 2rem;
+background-color: rgba(255, 255, 255, 0);
+-webkit-transition: color 300ms ease;
+transition: color 300ms ease;
+color: #fff;
+font-size: 0.833rem;
+line-height: 1.5;
+letter-spacing: 0.15em;
+text-transform: uppercase;
+}
+
+.btn:hover {
+color: #000;
+}
+
+@media screen and (max-width: 991px) {
+.nav---button {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  padding-left: 2rem;
+  text-align: left;
+}
+}
+
+.btn:hover {
+  color: #fff;
+}
+
+.recipe-card_wrapper {
+  position: relative;
+}
+
+.recipe-card_wrapper:hover .hover-buttons {
+  display: block !important;
+}
+
+.hover-buttons button {
+  border-radius: 4px;
+  font-size: 12px;
+  transition: opacity 0.3s ease;
+}
+
+.hover-buttons button:hover {
+  opacity: 0.8;
+}
+
+.logout-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  background-color: #e9e9e9;
+  color: black;
+  border: solid 1px black;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+}
+.logout-button:hover {
+  background-color: #d32f2f;
+}
+
+@media screen and (min-width: 767px) {
+    .mobile-only {
+      display: none;
+    }
+}
+
+.autocomplete {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  z-index: 99;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #e7e8de; 
+  border-bottom: 1px solid #d4d4d4; 
+}
+
+/*when hovering an item:*/
+.autocomplete-items div:hover {
+    background-color: #e9e9e9; 
+}
+
+/*when navigating through the items using the arrow keys:*/
+.autocomplete-active {
+    background-color: #e9e9e9 !important; 
+}
+.autocomplete {
+    position: relative;
+    display: inline-block; 
+}
+.scrollable{
+    overflow: auto;
+    height: 200px;
+}
+
+.scroll-trigger{
+    display: flex;
+}
+.item-component {
+    display: inline-block;
+    background-color: #f1f1f1;
+    padding: 5px 10px;
+    margin: 5px;
+    border-radius: 20px;
+    font-family: 'Roboto Mono', sans-serif;
+    font-size: 14px;
+  }
+  
+  .item-component[data-type="Tag"] {
+    background-color: #e0f7fa; /* Light blue for tags */
+  }
+  
+  .item-component[data-type="Ingredient"] {
+    background-color: #e8f5e9; /* Light green for ingredients */
+  }
+  
+  .remove-item {
+    background: none;
+    border: none;
+    color: #ff5252; /* A softer red */
+    cursor: pointer;
+    margin-left: 5px;
+    font-weight: bold;
+  }
+  
+  .remove-item:hover {
+    color: #ff1744; /* Darker red on hover */
+  }
+
+

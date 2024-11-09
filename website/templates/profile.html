@@ -1,0 +1,101 @@
+<head>
+    <link rel="stylesheet" href="../static/profile.css">
+</head>
+{% include 'partials/header.html' %}
+
+<main class="main-wrapper">
+    <a href="{{ url_for('auth.logout') }}" class="logout-button">Log Out</a>
+    <div class="section_home-header">
+        <div class="padding-global">
+            <div class="container-large">
+                <div class="layout-grid home-hero">
+                    <div id="w-node-_3d9d684a-769e-fbb9-8171-dc90379ef42d-c4d82939" class="grid-block">
+                        <h1 class="heading">Personal recipes</h1>
+                    </div>
+                    <div id="w-node-_57328808-bdf1-29f3-b381-f80a5ed9dcac-c4d82939" class="grid-block hide-mobile-landscape">
+                        <div class="text-block">An archive of personal recipes
+                            <br/> 
+                            <br/>
+                        </div>
+                        <a href="/post_recipe" class="link-block-with-icon w-inline-block">Add a recipe</a>
+                    </div>
+                    <div id="w-node-_9dda9300-6b32-118f-4adf-cb1899a9b9ee-c4d82939" class="grid-block">
+                        <div class="text-block mobile-only">An archive of personal recipes
+                            <br/> 
+                            <br/>
+                        </div>
+                        <div class="mobile-only">
+                            <a href="/post_recipe" class="link-block-with-icon w-inline-block ">Add a recipe</a>
+                        </div>
+                        <br/> 
+                        <div  class="recipe-search-form-block w-form">
+                            <div  class="recipe-search-form-block w-form">
+                                <form id="email-form" name="email-form" action="/search" data-name="Email Form" method="post" class="form" autocomplete="off">
+                                    <div class="autocomplete input-container">
+                                        <input type="text" class="search-field w-input" maxlength="256" name="search-field" placeholder="Search all recipes..." id="field" autocomplete="off"/>
+                                    </div>
+                                </form>
+                            </div> 
+                        </div>                                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="section_home-recipe-index">
+        <div class="padding-global">
+            <div class="container-large">
+                <div class="padding-section-small">
+                    <div class="w-dyn-list">
+                        <div id="scroller" fs-cmsfilter-element="list" role="list" class="layout-grid recipe-index w-dyn-items">
+
+                            <template id="post_template">
+                                <div id="w-node-_07582615-3f70-6f45-d425-87ba9322aefa-c4d82939" role="listitem" class="recipe_collection-item w-dyn-item">
+                                    <div class="recipe-card_wrapper">
+                                        <div class="hover-buttons" style="display: none; position: absolute; top: 10px; right: 10px; z-index: 10;">
+                                            <button class="edit-btn" style="background-color: green; color: white; border: none; padding: 5px 10px; margin-right: 5px; cursor: pointer;">Edit</button>
+                                            <button class="delete-btn" style="background-color: red; color: white; border: none; padding: 5px 10px; cursor: pointer;">Delete</button>
+                                        </div>
+                                        <a class="recipe-card_layout w-inline-block">
+                                            <div class="noverflow aspect-square">
+                                                <img loading="lazy" sizes="(max-width: 479px) 44vw, (max-width: 767px) 29vw, (max-width: 991px) 11vw, 9vw" class="img-cover absolute"/>
+                                            </div>
+                                            <div fs-cmsfilter-field="name" class="text-block-2" id="recipe_name"></div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </template>           
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% include 'partials/footer.html' %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.addEventListener('click', function(event) {
+            if (event.target.classList.contains('edit-btn') || event.target.classList.contains('delete-btn')) {
+                const recipeCard = event.target.closest('.recipe_collection-item');
+                const recipeLink = recipeCard.querySelector('a.recipe-card_layout');
+                const recipeId = recipeLink.getAttribute('href').split('/').pop();
+                
+                if (event.target.classList.contains('edit-btn')) {
+                    console.log('Edit recipe:', recipeId);
+                    window.location.href = `/post_recipe?recipe_id=${recipeId}`;
+                } else {
+                    console.log('Delete recipe:', recipeId);
+                    // Add your delete logic here
+                    fetch("/delete_recipe", {
+                        method: "POST",
+                        body: JSON.stringify({ recipe: recipeId }),
+                    }).then((_res) => {
+                        window.location.href = "/profile";
+                    });
+                }
+            }
+        });
+    });
+</script>

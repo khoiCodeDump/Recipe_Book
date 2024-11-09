@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>Recipe Archive</title>
+        <meta content="width=device-width, initial-scale=1" name="viewport"/>
+        <link rel="stylesheet" href="../static/home.css">
+        <link rel="preload" href="https://assets.website-files.com/64268a301624b45c09d82934/css/simple-recipe-book.webflow.d949bd6eb.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+        <link href="https://assets.website-files.com/64268a301624b45c09d82934/642dcf4fe66298be7abf172e_favicon.png" rel="shortcut icon" type="image/x-icon"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+        <link rel="stylesheet" href="../../static/header.css">
+    </head>
+
+    <body>
+        <nav id="top" class="nav" style="border-bottom: 2px solid black;">
+            <div class="padding-global">
+                <div class="nav_content">
+                    <div class="nav_left">
+                        <a href="/" aria-current="page" class="nav_link-block w-inline-block">
+                            <div>Home</div>
+                        </a>
+                        <!-- Add other left-aligned navigation items here -->
+                    </div>
+                    
+                    <div class="nav_right">
+                        <a href="{{ url_for('views.profile') if current_user.is_authenticated else url_for('auth.login') }}" class="nav_link-block w-inline-block">
+                            <i class="fas fa-user"></i>
+                        </a>
+                    </div>
+                    
+                </div>  
+            </div>
+        </nav>
+    </body>
+</html>

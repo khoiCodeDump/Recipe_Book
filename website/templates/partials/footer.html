@@ -1,0 +1,76 @@
+<footer class="footer">
+    <div class="padding-global">
+        <div class="container-large">
+            <div class="d-flex justify-content-center footer_content">
+
+                <div class="spinner-border" role="status">
+                  <span id="loading-text">Loading...</span>
+                </div>
+            </div>
+            <div class="footer_content" id="sentinel" >
+                <a href="#top" class="nav_link-block w-inline-block">
+                    <div>Back to top</div>
+                </a>
+            </div>
+        </div>
+    </div>
+</footer>
+    <script> 
+        if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/static/service-worker.js')
+                .then(registration => {
+                    console.log('ServiceWorker registration successful');
+                })
+                .catch(err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+        });
+        }
+        function loadItems()
+        { 
+            var route_data = {{data | tojson}}.route;
+            var route = (route_data === 0) ? `/load?count=${counter}` : (route_data === 1) ? `/load_profile?count=${counter}` : `/load_search?count=${counter}`;
+            fetch(route, {
+                method: "GET",
+            }).then((_res) => {
+                _res.json().then((data) => {
+                    
+                    if(!data.length){
+                        loading_text.innerHTML = "No more posts";
+                    }
+
+                    for(const key in data){
+                        console.log(data[key])
+                        let template_clone = template.content.cloneNode(true);
+                        const load_link = template_clone.querySelector("a");
+                        load_link.setAttribute("href", `/recipes/${data[key].id}`);
+                        const recipe_image = template_clone.querySelector("img");
+                        
+                        recipe_image.setAttribute("src", data[key].image_url);
+                        const recipe_name = template_clone.querySelector("#recipe_name");
+                        recipe_name.innerHTML = data[key].name;
+                        scroller.appendChild(template_clone);
+                        counter += 1;
+                    }
+                })
+            });
+        };
+
+        var counter = 0;
+        var sentinel = document.querySelector("#sentinel");
+        var template = document.querySelector("#post_template");
+        var scroller = document.querySelector("#scroller");
+        var loading_text = document.querySelector("#loading-text");
+        var intersectionObserver = new IntersectionObserver(entries => {
+            if(entries[0].intersectionRatio <= 0)
+            {
+                return;
+            }
+            loading_text.innerHTML = "Loading...";
+
+            loadItems();
+        });
+        intersectionObserver.observe(sentinel);
+    </script>
+</html>

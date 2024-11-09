@@ -1,0 +1,94 @@
+{% include 'partials/header.html' %}
+<head>
+    <link rel="stylesheet" href="../static/home.css">
+</head>
+<main class="main-wrapper">
+    <div class="section_home-header">
+        <div class="padding-global">
+            <div class="container-large">
+                <div class="layout-grid home-hero">
+                    <div id="w-node-_3d9d684a-769e-fbb9-8171-dc90379ef42d-c4d82939" class="grid-block">
+                        <h1 class="heading">Recipe Archive</h1>
+                    </div>
+                    <div id="w-node-_57328808-bdf1-29f3-b381-f80a5ed9dcac-c4d82939" class="grid-block hide-mobile-landscape">
+                        <div class="home-hero_intro-text-wrapper">
+                            <div class="text-block">An archive of recipes shared by home cooks
+                                <br/> 
+                                <br/>
+                            </div>
+                            <!-- <a href="#" target="_blank" class="link-block-with-icon w-inline-block">
+                                <div>Instagram</div>
+                                <div class="icon-1x1-small rotate w-embed">
+                                    <svg aria-hidden="true" fill='currentColor' role="img" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <title>Arrow Right</title>
+                                        <polygon points="16.172 9 10.101 2.929 11.515 1.515 20 10 19.293 10.707 11.515 18.485 10.101 17.071 16.172 11 0 11 0 9"/>
+                                    </svg>
+                                </div>
+                            </a> -->
+                        </div>
+                    </div>
+                    <div id="w-node-_9dda9300-6b32-118f-4adf-cb1899a9b9ee-c4d82939" class="grid-block">
+                        <div  class="recipe-search-form-block w-form">
+                            <form id="email-form" name="email-form" action="/search" data-name="Email Form" method="post" class="form" autocomplete="off">
+                                <div class="autocomplete input-container">
+                                    <input type="text" class="search-field w-input" maxlength="256" name="search-field" placeholder="Search all recipes..." id="field" autocomplete="off"/>
+                                </div>
+                            </form>
+                        </div>                                    
+                        <!-- <div class="recipe-search-form-block w-form">
+                            <form id="email-form" name="email-form" data-name="Email Form" method="get" class="form" data-wf-page-id="64268a311624b434c4d82939" data-wf-element-id="62acf81a-941b-ff24-3490-eaeb69755edb">
+                                <div class="w-dyn-list">
+                                    <div role="list" class="collection-list w-dyn-items">
+                                        
+                                        <div role="listitem" class="w-dyn-item">
+                                            <label class="w-checkbox pill">
+                                                <input type="checkbox" id="checkbox" name="checkbox" data-name="Checkbox" class="w-checkbox-input checkbox"/>
+                                                <span data-w-id="9e56de34-cbd6-b659-9d38-14719e74d74d" class="pill_text w-form-label" for="checkbox">Ingredients search</span>
+                                            </label>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </form>
+                            
+                            <div class="w-form-done">
+                                <div>Thank you! Your submission has been received!</div>
+                            </div>
+                            <div class="w-form-fail">
+                                <div>Oops! Something went wrong while submitting the form.</div>
+                            </div>
+                        
+                        </div>               -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="section_home-recipe-index">
+        <div class="padding-global">
+            <div class="container-large">
+                <div class="padding-section-small">
+                    <div class="w-dyn-list">
+                        <div id="scroller" fs-cmsfilter-element="list" role="list" class="layout-grid recipe-index w-dyn-items">
+                            <template id="post_template">
+                                <div id="w-node-_07582615-3f70-6f45-d425-87ba9322aefa-c4d82939" role="listitem" class="recipe_collection-item w-dyn-item">
+                                
+                                    <a  class="recipe-card_layout w-inline-block">
+                                    <div class="noverflow aspect-square">
+                                        <img loading="lazy" sizes="(max-width: 479px) 44vw, (max-width: 767px) 29vw, (max-width: 991px) 11vw, 9vw" class="img-cover absolute"/>
+                                    </div>
+                                    <div fs-cmsfilter-field="name" class="text-block-2" id="recipe_name"></div>
+                                    </a>
+                                </div>
+                            </template>            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+{% include 'partials/footer.html' %}
+
+

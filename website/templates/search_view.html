@@ -1,0 +1,121 @@
+{% include 'partials/header.html' %}    
+<head>
+    <link rel="stylesheet" href="../static/home.css">
+    <style>
+        .category {
+            margin-bottom: 20px;
+            background-color: #f1f1f1; /* Light background for the category */
+            padding: 10px; /* Padding around the category */
+            border-radius: 8px; /* Rounded corners */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+            border: 2px solid black;
+        }
+
+        .category h4 {
+            font-weight: bold;
+            margin-bottom: 10px; /* Space below the heading */
+        }
+
+        .category ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .category li {
+            padding: 8px; /* Padding for items */
+            margin: 5px 0; /* Margin between items */
+            border-radius: 5px; /* Rounded corners for items */
+            border: 1px solid black; /* Border for items */
+            display: inline-block; /* Change to inline-block to fit content */
+            max-width: 100%; /* Ensure it doesn't exceed the parent's width */
+        }
+        .tags li {
+            background-color: orangered;
+        }
+        .ingredients li{
+            background-color: orange;
+        }
+        .names li{
+            background-color: antiquewhite;
+        }
+    </style>
+</head>
+  <main>
+      <div class="section_home-header">
+          <div class="padding-global">
+              <div class="container-large">
+                  <div class="layout-grid home-hero">
+                      <div id="w-node-_3d9d684a-769e-fbb9-8171-dc90379ef42d-c4d82939" class="grid-block">
+                          <h3 class="heading">Search results: {{ search_field }}</h3>
+                          <!-- <div class="search-results">
+                              <div class="category tags">
+                                  <h4>Tags:</h4>
+                                  <ul>
+                                      {% for term in search_field.tags %}
+                                          {% if term|trim %}
+                                              <li>{{ term }}</li>
+                                          {% endif %}
+                                      {% endfor %}
+                                  </ul>
+                              </div>
+                              <div class="category ingredients">
+                                  <h4>Ingredients:</h4>
+                                  <ul>
+                                      {% for term in search_field.ingredients %}
+                                          {% if term|trim %}
+                                              <li>{{ term }}</li>
+                                          {% endif %}
+                                      {% endfor %}
+                                  </ul>
+                              </div>
+                              <div class="category names">
+                                  <h4>Names:</h4>
+                                  <ul>
+                                      {% for term in search_field.names %}
+                                          {% if term|trim %}
+                                              <li>{{ term }}</li>
+                                          {% endif %}
+                                      {% endfor %}
+                                  </ul>
+                              </div>
+                          </div> -->
+                      </div>
+                      
+                      <div id="w-node-_9dda9300-6b32-118f-4adf-cb1899a9b9ee-c4d82939" class="grid-block">
+                          <div  class="recipe-search-form-block w-form">
+                            <form id="email-form" name="email-form" action="/search" data-name="Email Form" method="post" class="form" autocomplete="off">
+                                <div class="autocomplete input-container">
+                                    <input type="text" class="search-field w-input" maxlength="256" name="search-field" placeholder="Search all recipes..." id="field" autocomplete="off"/>
+                                </div>
+                            </form>
+                          </div>                                    
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="section_home-recipe-index">
+        <div class="padding-global">
+            <div class="container-large">
+                <div class="padding-section-small">
+                    <div class="w-dyn-list">
+                        <div id="scroller" fs-cmsfilter-element="list" role="list" class="layout-grid recipe-index w-dyn-items">
+                            <template id="post_template">
+                                <div id="w-node-_07582615-3f70-6f45-d425-87ba9322aefa-c4d82939" role="listitem" class="recipe_collection-item w-dyn-item">
+                                
+                                    <a  class="recipe-card_layout w-inline-block">
+                                    <div class="noverflow aspect-square">
+                                        <img loading="lazy" sizes="(max-width: 479px) 44vw, (max-width: 767px) 29vw, (max-width: 991px) 11vw, 9vw" class="img-cover absolute"/>
+                                    </div>
+                                    <div fs-cmsfilter-field="name" class="text-block-2" id="recipe_name"></div>
+                                    </a>
+                                </div>
+                            </template>          
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </main>
+{% include 'partials/footer.html' %}

@@ -1,0 +1,17 @@
+[build]
+builder = "nixpacks"
+buildCommand = "pip install -r requirements.txt"
+
+[deploy]
+startCommand = "pg_restore -d $DATABASE_URL --no-owner --no-privileges database_dump.custom && gunicorn --bind=0.0.0.0:$PORT main:app"
+healthcheckPath = "/health"
+healthcheckTimeout = 300
+restartPolicyType = "on_failure"
+
+[deploy.env]
+PYTHONUNBUFFERED = "1"
+
+[[services]]
+name = "web"
+
+

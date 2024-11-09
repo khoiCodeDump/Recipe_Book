@@ -1,0 +1,30 @@
+.nav {
+    padding: 10px 0; /* Add some vertical padding */
+    background-color: #e0e0e0; /* Optional: add a background color */
+}
+
+.nav_content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.nav_left {
+    display: flex;
+    align-items: center;
+}
+
+.nav_right {
+    margin-left: auto;
+}
+
+.nav_link-block {
+    text-decoration: none;
+    color: #333333; /* Adjust the color as needed */
+    padding: 5px 10px; /* Add some padding to the links */
+}
+
+.nav_link-block:hover {
+    color: #007bff; /* Change color on hover */
+}
