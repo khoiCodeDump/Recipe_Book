@@ -58,7 +58,7 @@ def async_create_database(app):
 
 
 def create_database(app, model_name):
-    from .models import Recipe, ModelStorage, set_faiss_index, set_vectorizer_and_matrix, create_faiss_index
+    from .models import Recipe, ModelStorage, set_faiss_index, set_vectorizer_and_matrix, create_faiss_index, initialize_tfidvectorizer
 
     with app.app_context():
         
@@ -66,10 +66,6 @@ def create_database(app, model_name):
         if recipe_count > 0:
             print("Database exists, checking for models...")
             cache.set('all_recipes_ids_len', recipe_count, timeout=0)
-
-            m_faiss_index = create_faiss_index()
-             
-            faiss.write_index(m_faiss_index, f'recipe_index_{model_name}.faiss')
 
             # First check database for models
             try:
@@ -83,27 +79,29 @@ def create_database(app, model_name):
                 print("Models not found in database, loading from local files...")
                 try:
                     # Load from local files
-                    faiss_index = faiss.read_index(f'recipe_index_{model_name}.faiss')
-                    with open('tfidf_vectorizer.pkl', 'rb') as f:
-                        vectorizer = pickle.load(f)
-                    tfidf_matrix = sp.load_npz('tfidf_matrix.npz')
-                    
+                    faiss_index = create_faiss_index()
+                                 
                     # Store in database
                     faiss_storage = ModelStorage(name='faiss_index')
                     faiss_storage.set_data(faiss_index)
 
+                    print("Finished setting faiss storage")
                     db.session.add(faiss_storage)
                     db.session.commit()
 
+                    vectorizer, tfidf_matrix = initialize_tfidvectorizer()
+
                     tfidf_storage = ModelStorage(name='tfidf_matrix')
                     tfidf_storage.set_data(tfidf_matrix)
-
+                    
+                    print("Finished setting tfidf storage")
                     db.session.add(tfidf_storage)
                     db.session.commit()
 
                     vectorizer_storage = ModelStorage(name='tfidf_vectorizer')
                     vectorizer_storage.set_data(vectorizer)
                         
+                    print("Finished setting vectorizer storage")
                     db.session.add(vectorizer_storage)
                     db.session.commit()
 

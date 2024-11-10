@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from sentence_transformers import SentenceTransformer
 import numpy as np
 from website import model_name
-from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
+from sklearn.feature_extraction.text import TfidfVectorizer, ENGLISH_STOP_WORDS
 from sklearn.metrics.pairwise import cosine_similarity
 from scipy.sparse import vstack
 from sqlalchemy.types import LargeBinary, TypeDecorator
@@ -289,3 +289,19 @@ def create_faiss_index(batch_size=1000):
         import traceback
         traceback.print_exc()
         return None, []
+
+def initialize_tfidvectorizer(all_recipes_ids_len):
+    global vectorizer, tfidf_matrix
+    recipe_texts = []
+    for i in range(0, all_recipes_ids_len):    
+        print(f"Formatting text for recipe {i+1}")
+        recipe = Recipe.query.get(i+1)
+        recipe_texts.append(prepare_recipe_text(recipe))
+
+    # Initialize TfidfVectorizer with appropriate parameters
+    vectorizer = TfidfVectorizer(stop_words='english', ngram_range=(1, 2))
+
+    # Fit the vectorizer to your text data
+    tfidf_matrix = vectorizer.fit_transform(recipe_texts)
+
+    return vectorizer, tfidf_matrix
