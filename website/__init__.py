@@ -58,7 +58,7 @@ def async_create_database(app):
 
 
 def create_database(app, model_name):
-    from .models import Recipe, ModelStorage, set_faiss_index, set_vectorizer_and_matrix
+    from .models import Recipe, ModelStorage, set_faiss_index, set_vectorizer_and_matrix, create_faiss_index
 
     with app.app_context():
         
@@ -66,6 +66,11 @@ def create_database(app, model_name):
         if recipe_count > 0:
             print("Database exists, checking for models...")
             cache.set('all_recipes_ids_len', recipe_count, timeout=0)
+
+            m_faiss_index = create_faiss_index()
+             
+            faiss.write_index(m_faiss_index, f'recipe_index_{model_name}.faiss')
+
             # First check database for models
             try:
                 faiss_storage = ModelStorage.query.filter_by(name='faiss_index').first()
@@ -107,6 +112,6 @@ def create_database(app, model_name):
                     set_faiss_index(faiss_index)
                     set_vectorizer_and_matrix(vectorizer, tfidf_matrix)
                 except Exception as e:
-                    print(faiss.__version__)
                     raise Exception(f"Failed to load model files: {e}")
-        
+
+

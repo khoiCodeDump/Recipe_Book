@@ -10,7 +10,7 @@ from scipy.sparse import vstack
 from sqlalchemy.types import LargeBinary, TypeDecorator
 import pickle
 import zlib
-
+import faiss
 
 model = SentenceTransformer(model_name)
 faiss_index = None
@@ -235,3 +235,57 @@ def combined_search_recipes(user_query, k_elements=100, semantic_threshold=0.1, 
     # Return recipe IDs
     return [int(recipe_id) for recipe_id, _ in sorted_results]
 
+def create_faiss_index(batch_size=1000):
+
+    global faiss_index
+    
+    # Get total count of recipes with embeddings
+    total_recipes = Recipe.query.filter(Recipe.embedding != None).count()
+    print(f"Total recipes with embeddings: {total_recipes}")
+
+    # Adjust nlist based on total recipes
+    nlist = min(256, max(1, total_recipes // 39))  # Ensure at least 39 points per centroid
+    print(f"Using {nlist} clusters for {total_recipes} recipes")
+
+    try:
+        # Collect training data
+        training_data = []
+        training_size = max(10000, 39 * nlist)  # Ensure we have at least 10,000 points or 39 * nlist, whichever is larger
+        
+        for i in range(0, training_size, batch_size):
+            recipes = Recipe.query.filter(Recipe.embedding != None).with_entities(Recipe.embedding).offset(i).limit(batch_size).all()
+            if not recipes:
+                break
+            embeddings = np.array([recipe.embedding for recipe in recipes], dtype=np.float32)
+            training_data.append(embeddings)
+        
+        training_data = np.vstack(training_data)
+
+        # Create and train the index
+        embedding_dim = training_data.shape[1]
+        m = 8  # number of subquantizers
+        bits = 8  # bits per subquantizer
+
+        quantizer = faiss.IndexFlatL2(embedding_dim)
+        faiss_index = faiss.IndexIVFPQ(quantizer, embedding_dim, nlist, m, bits)
+        
+        faiss_index.train(training_data)
+
+        # Add all embeddings to the index
+        for i in range(0, total_recipes, batch_size):
+            
+            recipes = Recipe.query.filter(Recipe.embedding != None).with_entities(Recipe.id, Recipe.embedding).offset(i).limit(batch_size).all()
+            
+            embeddings = np.array([recipe.embedding for recipe in recipes], dtype=np.float32)
+            faiss_index.add(embeddings)
+            
+        
+        print("FAISS index creation completed successfully.")
+
+        return faiss_index
+        
+    except Exception as e:
+        print(f"An error occurred during index creation: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return None, []
