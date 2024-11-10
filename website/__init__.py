@@ -107,5 +107,6 @@ def create_database(app, model_name):
                     set_faiss_index(faiss_index)
                     set_vectorizer_and_matrix(vectorizer, tfidf_matrix)
                 except Exception as e:
+                    print(faiss.__version__)
                     raise Exception(f"Failed to load model files: {e}")
         
