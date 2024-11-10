@@ -80,30 +80,44 @@ def create_database(app, model_name):
                 try:
                     print("creating faiss storage")
                     # Load from local files
+                    print("Starting faiss index creation...")
                     faiss_index = create_faiss_index()
+                    print("Faiss index created successfully")
+                    
                     # Store in database
+                    print("Storing faiss index in database...")
                     faiss_storage = ModelStorage(name='faiss_index')
                     faiss_storage.set_data(faiss_index)
-                    print("Finished setting faiss storage")
+                    print("Faiss index stored in database successfully")
 
-                    print("creating vectorizer and matrix storage")
-                    vectorizer, tfidf_matrix = initialize_tfidvectorizer(cache.get('all_recipes_ids_len'))
+                    print("Starting vectorizer and matrix initialization...")
+                    recipe_count = cache.get('all_recipes_ids_len')
+                    print(f"Recipe count: {recipe_count}")
+                    vectorizer, tfidf_matrix = initialize_tfidvectorizer(recipe_count)
+                    print("Vectorizer and matrix initialized successfully")
 
+                    print("Storing TF-IDF matrix in database...")
                     tfidf_storage = ModelStorage(name='tfidf_matrix')
                     tfidf_storage.set_data(tfidf_matrix)
-                    
-                    print("Finished setting tfidf storage")
+                    print("TF-IDF matrix stored successfully")
 
+                    print("Storing vectorizer in database...")
                     vectorizer_storage = ModelStorage(name='tfidf_vectorizer')
                     vectorizer_storage.set_data(vectorizer)
-                    print("Finished setting vectorizer storage")
+                    print("Vectorizer stored successfully")
 
+                    print("Setting global variables...")
                     set_faiss_index(faiss_index)
                     set_vectorizer_and_matrix(vectorizer, tfidf_matrix)
+                    
+                    print("Adding models to database session...")
                     db.session.add(faiss_storage)
                     db.session.add(tfidf_storage)
                     db.session.add(vectorizer_storage)
+                    
+                    print("Committing to database...")
                     db.session.commit()
+                    print("Database commit successful")
 
                     print("Models stored in database")
                      # Set the models
