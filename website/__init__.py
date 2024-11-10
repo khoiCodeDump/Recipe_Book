@@ -63,9 +63,10 @@ def create_database(app, model_name):
     with app.app_context():
         
         recipe_count = Recipe.query.count()
+        cache.set('all_recipes_ids_len', recipe_count, timeout=0)
+        
         if recipe_count > 0:
             print("Database exists, checking for models...")
-            cache.set('all_recipes_ids_len', recipe_count, timeout=0)
 
             # First check database for models
             try:
