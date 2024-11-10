@@ -89,7 +89,7 @@ def create_database(app, model_name):
                     db.session.add(faiss_storage)
                     db.session.commit()
 
-                    vectorizer, tfidf_matrix = initialize_tfidvectorizer()
+                    vectorizer, tfidf_matrix = initialize_tfidvectorizer(cache.get('all_recipes_ids_len'))
 
                     tfidf_storage = ModelStorage(name='tfidf_matrix')
                     tfidf_storage.set_data(tfidf_matrix)
