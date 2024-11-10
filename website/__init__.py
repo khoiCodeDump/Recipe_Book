@@ -81,14 +81,10 @@ def create_database(app, model_name):
                     print("creating faiss storage")
                     # Load from local files
                     faiss_index = create_faiss_index()
-                                 
                     # Store in database
                     faiss_storage = ModelStorage(name='faiss_index')
                     faiss_storage.set_data(faiss_index)
-
                     print("Finished setting faiss storage")
-                    db.session.add(faiss_storage)
-                    db.session.commit()
 
                     print("creating vectorizer and matrix storage")
                     vectorizer, tfidf_matrix = initialize_tfidvectorizer(cache.get('all_recipes_ids_len'))
@@ -97,20 +93,21 @@ def create_database(app, model_name):
                     tfidf_storage.set_data(tfidf_matrix)
                     
                     print("Finished setting tfidf storage")
-                    db.session.add(tfidf_storage)
-                    db.session.commit()
 
                     vectorizer_storage = ModelStorage(name='tfidf_vectorizer')
                     vectorizer_storage.set_data(vectorizer)
-                        
                     print("Finished setting vectorizer storage")
+
+                    set_faiss_index(faiss_index)
+                    set_vectorizer_and_matrix(vectorizer, tfidf_matrix)
+                    db.session.add(faiss_storage)
+                    db.session.add(tfidf_storage)
                     db.session.add(vectorizer_storage)
                     db.session.commit()
 
                     print("Models stored in database")
                      # Set the models
-                    set_faiss_index(faiss_index)
-                    set_vectorizer_and_matrix(vectorizer, tfidf_matrix)
+                    
                 except Exception as e:
                     raise Exception(f"Failed to load model files: {e}")
 
