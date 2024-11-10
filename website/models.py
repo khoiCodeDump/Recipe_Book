@@ -241,11 +241,11 @@ def create_faiss_index(batch_size=1000):
     
     # Get total count of recipes with embeddings
     total_recipes = Recipe.query.filter(Recipe.embedding != None).count()
-    print(f"Total recipes with embeddings: {total_recipes}")
+    # print(f"Total recipes with embeddings: {total_recipes}")
 
     # Adjust nlist based on total recipes
     nlist = min(256, max(1, total_recipes // 39))  # Ensure at least 39 points per centroid
-    print(f"Using {nlist} clusters for {total_recipes} recipes")
+    # print(f"Using {nlist} clusters for {total_recipes} recipes")
 
     try:
         # Collect training data

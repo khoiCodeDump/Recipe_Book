@@ -78,6 +78,7 @@ def create_database(app, model_name):
             except:
                 print("Models not found in database, loading from local files...")
                 try:
+                    print("creating faiss storage")
                     # Load from local files
                     faiss_index = create_faiss_index()
                                  
@@ -89,6 +90,7 @@ def create_database(app, model_name):
                     db.session.add(faiss_storage)
                     db.session.commit()
 
+                    print("creating vectorizer and matrix storage")
                     vectorizer, tfidf_matrix = initialize_tfidvectorizer(cache.get('all_recipes_ids_len'))
 
                     tfidf_storage = ModelStorage(name='tfidf_matrix')
