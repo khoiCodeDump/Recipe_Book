@@ -83,7 +83,7 @@ def create_database(app, model_name):
                         vectorizer = pickle.load(f)
                     tfidf_matrix = sp.load_npz('tfidf_matrix.npz')
                     
-                    # # Store in database
+                    # Store in database
                     faiss_storage = ModelStorage(name='faiss_index')
                     faiss_storage.set_data(faiss_index)
 
