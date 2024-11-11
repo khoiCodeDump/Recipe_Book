@@ -219,9 +219,9 @@ def remove_recipe_from_faiss(recipe):
                             np.finfo(np.float32).max, 
                             dtype=np.float32)
     
-    # Remove the old vector and add the empty one
+    # Remove the old vector and add the empty one at the same ID
     faiss_index.remove_ids(np.array([recipe.id - 1]))
-    faiss_index.add(empty_embedding)
+    faiss_index.add_with_ids(empty_embedding, np.array([recipe.id - 1]))
     
     print(f"Marked recipe {recipe.id} as empty in FAISS index.")
         
