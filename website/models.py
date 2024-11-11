@@ -214,10 +214,8 @@ def add_recipe_to_faiss(recipe):
 def remove_recipe_from_faiss(recipe):
     global faiss_index, tfidf_matrix
     
-    # Create an empty embedding (very large values to ensure low similarity)
-    empty_embedding = np.full((1, model.get_sentence_embedding_dimension()), 
-                            np.finfo(np.float32).max, 
-                            dtype=np.float32)
+    # Create an empty embedding using zeros
+    empty_embedding = np.zeros((1, model.get_sentence_embedding_dimension()), dtype=np.float32)
     
     # Remove the old vector and add the empty one at the same ID
     faiss_index.remove_ids(np.array([recipe.id - 1]))
