@@ -76,6 +76,7 @@ def create_database(app, model_name):
                 print("Loading models from database...")
                 set_faiss_index(faiss_storage.get_data())
                 set_vectorizer_and_matrix(vectorizer_storage.get_data(), tfidf_storage.get_data())
+                print("Loaded models succesfully")
             except:
                 print("Models not found in database, loading from local files...")
                 try:
