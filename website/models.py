@@ -194,6 +194,7 @@ def add_recipe_to_faiss(recipe):
     embedding = np.array([recipe.embedding], dtype=np.float32)
 
     index_length = faiss_index.ntotal
+    print(recipe.id)
     print(f"Before add: Number of vectors in FAISS index: {index_length}")
     # Add the embedding to the FAISS index
     faiss_index.add(embedding)
