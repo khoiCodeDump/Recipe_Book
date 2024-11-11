@@ -11,6 +11,7 @@ from sqlalchemy.types import LargeBinary, TypeDecorator
 import pickle
 import zlib
 import faiss
+import scipy.sparse as sp
 
 model = SentenceTransformer(model_name)
 faiss_index = None
@@ -150,9 +151,14 @@ def add_recipe_to_faiss(recipe):
 def remove_recipe_from_faiss(recipe):
     global faiss_index, tfidf_matrix
     
-    # Remove the embedding from the FAISS index
+    # Create an empty embedding using zeros
+    empty_embedding = np.zeros((1, model.get_sentence_embedding_dimension()), dtype=np.float32)
+    
+    # Remove the old vector and add the empty one at the same ID
     faiss_index.remove_ids(np.array([recipe.id - 1]))
-    print(f"Removed recipe {recipe.id} from FAISS index.")
+    faiss_index.add_with_ids(empty_embedding, np.array([recipe.id - 1]))
+    
+    print(f"Marked recipe {recipe.id} as empty in FAISS index.")
         
     # Store updated FAISS index in database
     # faiss_storage = ModelStorage.query.filter_by(name='faiss_index').first()
@@ -161,13 +167,14 @@ def remove_recipe_from_faiss(recipe):
     # faiss_storage.set_data(faiss_index)
 
     #Removing from matrix
-    row_to_remove = recipe.id - 1  # Assuming recipe IDs start from 1
-    mask = np.ones(tfidf_matrix.shape[0], dtype=bool)
-    mask[row_to_remove] = False
-    tfidf_matrix = tfidf_matrix[mask]
-
-    print(f"Removed recipe {recipe.id} from TF-IDF matrix.")
-    print(f"Updated TF-IDF matrix shape: {tfidf_matrix.shape}")
+    # Create an empty sparse row with the same shape as other rows
+    row_to_remove = recipe.id - 1
+    empty_row = sp.csr_matrix((1, tfidf_matrix.shape[1]))
+    
+    # Replace the row with the empty sparse row
+    tfidf_matrix[row_to_remove] = empty_row
+    
+    print(f"Marked recipe {recipe.id} as empty in TF-IDF matrix.")
 
     # Store updated TF-IDF matrix in database
     # tfidf_storage = ModelStorage.query.filter_by(name='tfidf_matrix').first()
