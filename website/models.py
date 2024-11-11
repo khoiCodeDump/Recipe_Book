@@ -213,24 +213,31 @@ def add_recipe_to_faiss(recipe):
 def remove_recipe_from_faiss(recipe):
     global faiss_index, tfidf_matrix
     
-    # Remove the embedding from the FAISS index
+    # Create an empty embedding (very large values to ensure low similarity)
+    empty_embedding = np.full((1, model.get_sentence_embedding_dimension()), 
+                            np.finfo(np.float32).max, 
+                            dtype=np.float32)
+    
+    # Remove the old vector and add the empty one
     faiss_index.remove_ids(np.array([recipe.id - 1]))
-    print(f"Removed recipe {recipe.id} from FAISS index.")
+    faiss_index.add(empty_embedding)
+    
+    print(f"Marked recipe {recipe.id} as empty in FAISS index.")
         
-    # Optionally, save the updated FAISS index to disk
+    # Save the updated FAISS index to disk
     faiss.write_index(faiss_index, f'recipe_index_{model_name}.faiss')
 
-    row_to_remove = recipe.id - 1  # Assuming recipe IDs start from 1
-    mask = np.ones(tfidf_matrix.shape[0], dtype=bool)
-    mask[row_to_remove] = False
-    tfidf_matrix = tfidf_matrix[mask]
-
-    print(f"Removed recipe {recipe.id} from TF-IDF matrix.")
-    print(f"Updated TF-IDF matrix shape: {tfidf_matrix.shape}")
-
-    # Save the updated TF-IDF matrix
-    sp.save_npz('tfidf_matrix.npz', tfidf_matrix)
+    # Create an empty sparse row with the same shape as other rows
+    row_to_remove = recipe.id - 1
+    empty_row = sp.csr_matrix((1, tfidf_matrix.shape[1]))
     
+    # Replace the row with the empty sparse row
+    tfidf_matrix[row_to_remove] = empty_row
+    
+    print(f"Marked recipe {recipe.id} as empty in TF-IDF matrix.")
+    
+    sp.save_npz('tfidf_matrix.npz', tfidf_matrix)
+
 def search_recipes(recipes, query_res, result):
     clone_recipe_ids = set()
 
@@ -275,23 +282,21 @@ def clean_query(user_query):
     return cleaned_query.lower()
 
 def semantic_search_recipes(user_query, k_elements, similarity_threshold=0.1):
-    
     global faiss_index
 
-    # Generate an embedding for the user's query
-
     query_embedding = model.encode(user_query)
-    # Search the FAISS index for the most similar recipes
     distances, indices = faiss_index.search(np.array([query_embedding], dtype=np.float32), k_elements)
     
-    # Filter results based on the similarity threshold
+    # Filter results based on similarity threshold
     similar_recipes = []
-
+    
     for distance, index in zip(distances[0], indices[0]):
-        similarity = 1 / (1 + distance)  # Convert distance to similarity
+        # Convert distance to similarity score
+        similarity = 1 / (1 + distance)
+        # Skip if similarity is too low (indicating potential empty/deleted vector)
         if similarity >= similarity_threshold:
-            similar_recipes.append(index+1)
-        
+            similar_recipes.append(index + 1)
+            
     return similar_recipes
 
 
@@ -345,15 +350,19 @@ def tfidf_search_recipes(query, top_n=100):
 def combined_search_recipes(user_query, k_elements=100, semantic_threshold=0.1, tfidf_threshold=1, semantic_weight=0.4, tfidf_weight=0.6):
     global faiss_index, model, vectorizer, tfidf_matrix
 
-    # Semantic Search (unchanged)
+    # Semantic Search
     query_embedding = model.encode(user_query)
     distances, indices = faiss_index.search(np.array([query_embedding], dtype=np.float32), k_elements)
     
     semantic_results = {}
     for distance, index in zip(distances[0], indices[0]):
-        similarity = 1 / (1 + distance)  # Convert distance to similarity
+        similarity = 1 / (1 + distance)
         if similarity >= semantic_threshold:
             semantic_results[index + 1] = similarity
+
+    query_embedding = model.encode(user_query)
+    distances, indices = faiss_index.search(np.array([query_embedding], dtype=np.float32), k_elements)
+
 
     # TF-IDF Search
     # Remove stop words and split the query
