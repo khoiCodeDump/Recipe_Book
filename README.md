@@ -1,4 +1,4 @@
-# Food_recommender
+# Recipe Book
 
 
 A website all about food recipes!
@@ -6,6 +6,6 @@ A website all about food recipes!
 ## Technology used
 Frontend: HTML, CSS, and Javascript, jinja templates
 
-Backend: Python flask sqlite3 with flask-sqlalchemy
+Backend: Python, flask, Postgresql with SQLAlchemy
 
-AI integration: ChatGpt with vector database using hugging face transformers for better search results of recipes.
+AI integration: TFIDF vectorizer and matrix to encode recipes for efficient search. Used Transformers to generate embeddings which are then stored in FAISS index for efficient search.
